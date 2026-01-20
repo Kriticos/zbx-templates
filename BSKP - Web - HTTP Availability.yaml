@@ -1,0 +1,35 @@
+zabbix_export:
+  version: '7.4'
+  template_groups:
+    - uuid: 550e8400e29b41d4a716446655440000
+      name: 'bskp Templates'
+  templates:
+    - uuid: cf0ab4299e314ddbbff027223183fabe
+      template: 'BSKP - Web - HTTP Availability'
+      name: 'BSKP - Web - HTTP Availability'
+      description: |
+        HTTP availability monitoring for websites and APIs using web scenarios and macros. 
+        Suitable for external site monitoring with customizable URL, port and allowed status codes.
+      vendor:
+        name: bskp
+        version: 1.0-1
+      groups:
+        - name: 'bskp Templates'
+      httptests:
+        - uuid: eb01f8af5afd4f65b60054bf9617b49d
+          name: 'Check Website - {$SITE}'
+          steps:
+            - name: 'Check Website - {$SITE}'
+              url: '{$SITE}'
+              status_codes: '{$STATUS}'
+      macros:
+        - macro: '{$SITE}'
+          description: 'Target domain'
+        - macro: '{$STATUS}'
+  triggers:
+    - uuid: b570e80e7e4e4ad990ee38e4fad7ed11
+      expression: 'last(/BSKP - Web - HTTP Availability/web.test.fail[Check Website - {$SITE}])>0'
+      name: '{HOST.NAME} - {$SITE} is unavailable (HTTP invalid response)'
+      priority: HIGH
+      tags:
+        - tag: Web

@@ -1,0 +1,108 @@
+zabbix_export:
+  version: '7.4'
+  template_groups:
+    - uuid: 550e8400e29b41d4a716446655440000
+      name: 'bskp Templates'
+  templates:
+    - uuid: 843dd3ae8b2048ce98d8b79588397aa2
+      template: 'BSKP - Container - Monitor Linux'
+      name: 'BSKP - Container - Monitor Linux'
+      vendor:
+        name: bskp
+        version: '1.0'
+      groups:
+        - name: 'bskp Templates'
+      items:
+        - uuid: 19c29f8b2b7943708eec22f76514f3b0
+          name: 'CPU: Utilization'
+          type: TRAP
+          key: container.cpu.util
+          units: '%'
+          triggers:
+            - uuid: 8a64a3b234a44ebe98041352089b8b43
+              expression: 'avg(/BSKP - Container - Monitor Linux/container.cpu.util,{$CPU.UTIL.TIME})>{$CPU.UTIL.MAX}'
+              name: 'High CPU usage on {HOST.NAME}'
+              priority: AVERAGE
+              manual_close: 'YES'
+            - uuid: 61bf5f97969e47679810c9d887b2ebc8
+              expression: 'nodata(/BSKP - Container - Monitor Linux/container.cpu.util,{$NO.DATA.TIME})=1'
+              name: 'No data received from {HOST.NAME}'
+              priority: HIGH
+              manual_close: 'YES'
+              tags:
+                - tag: scope
+                  value: availability
+                - tag: service
+                  value: container
+        - uuid: 8841ee73d7044f3f97755e8702943e58
+          name: 'Disk: Read bytes (total)'
+          type: TRAP
+          key: container.disk.read.bytes
+          value_type: FLOAT
+          units: B
+          description: 'Quantidade total de dados gravados pelo container no disco desde que ele foi iniciado.'
+        - uuid: 28282ec5b74d49eb9e61c01b5a450036
+          name: 'Disk: Written bytes (total)'
+          type: TRAP
+          key: container.disk.write.bytes
+          value_type: FLOAT
+          units: B
+          description: 'Quantidade total de dados gravados pelo container no disco desde que ele foi iniciado.'
+        - uuid: ef00d5cc9bc74575a926f0ff116123d5
+          name: 'Memory: Used'
+          type: TRAP
+          key: container.memory.util
+          value_type: FLOAT
+          units: B
+        - uuid: b88b99a2dd534e1b831d201e67235fd6
+          name: 'Network: RX bytes (total)'
+          type: TRAP
+          key: container.net.rx.bytes
+          value_type: FLOAT
+          units: B
+          description: 'Total de dados recebidos pelo container desde que ele foi iniciado.'
+        - uuid: ace069baf9c0407884eccbdd2e7d2b35
+          name: 'Network: TX bytes (total)'
+          type: TRAP
+          key: container.net.tx.bytes
+          value_type: FLOAT
+          units: B
+          description: 'Total de dados enviados pela interface de rede do container desde o início da execução.'
+        - uuid: 2b66f3899aae4b9c9b105adf7872fbe9
+          name: 'Processes: Count'
+          type: TRAP
+          key: container.pids
+          triggers:
+            - uuid: c0a5c9814ded43638e98bd44ad0d25d8
+              expression: 'last(/BSKP - Container - Monitor Linux/container.pids)<{$PROC.MIN}'
+              name: '{HOST.NAME} has no running processes'
+              priority: HIGH
+              manual_close: 'YES'
+      tags:
+        - tag: device
+          value: container
+        - tag: os
+          value: linux
+        - tag: service
+          value: docker
+        - tag: vendor
+          value: bskp
+      macros:
+        - macro: '{$CPU.UTIL.MAX}'
+          value: '90'
+          description: 'Maximum allowed CPU utilization percentage for the container before triggering an alert.'
+        - macro: '{$NO.DATA.TIME}'
+          value: 10m
+          description: 'Time period without receiving any data from the container after which an alert is triggered.'
+        - macro: '{$PROC.MIN}'
+          value: '1'
+          description: 'Minimum number of running processes expected inside the container. Values below this indicate that the container may be stopped or unhealthy.'
+  triggers:
+    - uuid: fd63176f3067443f834d6d10c0aa16e7
+      expression: |
+        count(/BSKP - Container - Monitor Linux/container.net.rx.bytes,{$NO.DATA.TIME},"eq",0)=count(/BSKP - Container - Monitor Linux/container.net.rx.bytes,{$NO.DATA.TIME})
+        and
+        count(/BSKP - Container - Monitor Linux/container.net.tx.bytes,{$NO.DATA.TIME},"eq",0)=count(/BSKP - Container - Monitor Linux/container.net.tx.bytes,{$NO.DATA.TIME})
+      name: 'No network traffic on {HOST.NAME}'
+      priority: WARNING
+      manual_close: 'YES'

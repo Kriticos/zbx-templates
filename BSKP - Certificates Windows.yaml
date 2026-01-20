@@ -1,0 +1,194 @@
+zabbix_export:
+  version: '7.4'
+  template_groups:
+    - uuid: 550e8400e29b41d4a716446655440000
+      name: 'bskp Templates'
+  templates:
+    - uuid: ce8ba57a7470459ba5a420348fd5bd38
+      template: 'BSKP - Certificates Windows'
+      name: 'BSKP - Certificates Windows'
+      description: |
+        Template: Certificados - Windows
+        
+        Autor: Kriticos (blackskulp.com.br)
+        Criação: 2025-03-15
+        Versão: 1.0
+        
+        Descrição:
+        Este template realiza a descoberta automática de certificados instalados no repositório LocalMachine e monitora a data de expiração.
+        
+        A trigger é acionada 15 dias antes do vencimento do certificado, podendo ser ajustada conforme necessidade.
+      vendor:
+        name: bskp
+        version: 1.0-1
+      groups:
+        - name: 'bskp Templates'
+      discovery_rules:
+        - uuid: 39fb5ac133974b069f855ddf557d9162
+          name: 'Certificado - LLD'
+          key: cert.discovery
+          delay: 6h
+          item_prototypes:
+            - uuid: 4e0f17aaf4c64561b81223ef85c3d01e
+              name: 'Certificado expirando - {#CERTCN}'
+              key: 'cert.expira[{#THUMBPRINT}]'
+              delay: 24h
+              history: 7d
+              units: 'dias restantes'
+              tags:
+                - tag: Certificados
+                  value: Windows
+              trigger_prototypes:
+                - uuid: c329e72b98d24a3ba0c48600b83a96b2
+                  expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])=1'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])<>1'
+                  name: '⚠️ {HOST.NAME}: Certificado {#CERTCN} - expira em {ITEM.LASTVALUE1} dia(s)'
+                  priority: HIGH
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: Windows
+                - uuid: 86066e7de68b4d3e8e4f82dc0514254b
+                  expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])=2'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])<>2'
+                  name: '⚠️ {HOST.NAME}: Certificado {#CERTCN} - expira em {ITEM.LASTVALUE1} dia(s)'
+                  priority: HIGH
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: Windows
+                - uuid: 56cbebda088e4c0eaca8104647103567
+                  expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])=3'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])<>3'
+                  name: '⚠️ {HOST.NAME}: Certificado {#CERTCN} - expira em {ITEM.LASTVALUE1} dia(s)'
+                  priority: HIGH
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: Windows
+                - uuid: 8b97cef42d124b4ba3438d821f0688a6
+                  expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])=4'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])<>4'
+                  name: '⚠️ {HOST.NAME}: Certificado {#CERTCN} - expira em {ITEM.LASTVALUE1} dia(s)'
+                  priority: HIGH
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: Windows
+                - uuid: 33c10b135a0d43f3aa8f6f353f7b7c00
+                  expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])=5'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])<>5'
+                  name: '⚠️ {HOST.NAME}: Certificado {#CERTCN} - expira em {ITEM.LASTVALUE1} dia(s)'
+                  priority: HIGH
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: Windows
+                - uuid: bbf95ab17ec549f5a7236c58867e61c8
+                  expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])=6'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])<>6'
+                  name: '⚠️ {HOST.NAME}: Certificado {#CERTCN} - expira em {ITEM.LASTVALUE1} dia(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: Windows
+                - uuid: 6fdde70d0ad5416fae96b8a948fe6830
+                  expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])=7'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])<>7'
+                  name: '⚠️ {HOST.NAME}: Certificado {#CERTCN} - expira em {ITEM.LASTVALUE1} dia(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: Windows
+                - uuid: 99d9a8f657454c6197192b7ad7d151b2
+                  expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])=8'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])<>8'
+                  name: '⚠️ {HOST.NAME}: Certificado {#CERTCN} - expira em {ITEM.LASTVALUE1} dia(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: Windows
+                - uuid: 04acc92932c74ef8943f5e6ffc272135
+                  expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])=9'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])<>9'
+                  name: '⚠️ {HOST.NAME}: Certificado {#CERTCN} - expira em {ITEM.LASTVALUE1} dia(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: Windows
+                - uuid: fb91104ba7814afc93166d5796bb878f
+                  expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])=10'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])<>10'
+                  name: '⚠️ {HOST.NAME}: Certificado {#CERTCN} - expira em {ITEM.LASTVALUE1} dia(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: Windows
+                - uuid: 47b8ef66e4784a8b85c3aa6c2883fe60
+                  expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])=11'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])<>11'
+                  name: '⚠️ {HOST.NAME}: Certificado {#CERTCN} - expira em {ITEM.LASTVALUE1} dia(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: Windows
+                - uuid: ead706518b594c46be94f6442ae11f26
+                  expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])=12'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])<>12'
+                  name: '⚠️ {HOST.NAME}: Certificado {#CERTCN} - expira em {ITEM.LASTVALUE1} dia(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: Windows
+                - uuid: e0acaca08a964cc99761f9bd596f1987
+                  expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])=13'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])<>13'
+                  name: '⚠️ {HOST.NAME}: Certificado {#CERTCN} - expira em {ITEM.LASTVALUE1} dia(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: Windows
+                - uuid: 794489a06d294269ae7da0cba8726595
+                  expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])=14'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])<>14'
+                  name: '⚠️ {HOST.NAME}: Certificado {#CERTCN} - expira em {ITEM.LASTVALUE1} dia(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: Windows
+                - uuid: 6878b8d146a243869d1fd97dd3d9d73d
+                  expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])=15'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Windows/cert.expira[{#THUMBPRINT}])<>15'
+                  name: '⚠️ {HOST.NAME}: Certificado {#CERTCN} - expira em {ITEM.LASTVALUE1} dia(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: Windows
+      tags:
+        - tag: Certificados
+          value: Windows

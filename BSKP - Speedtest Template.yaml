@@ -1,0 +1,145 @@
+zabbix_export:
+  version: '7.4'
+  template_groups:
+    - uuid: 550e8400e29b41d4a716446655440000
+      name: 'bskp Templates'
+  templates:
+    - uuid: f8ffd092548b4e109da57e223eca34b9
+      template: 'BSKP - Speedtest Template'
+      name: 'BSKP - Speedtest Template'
+      vendor:
+        name: bskp
+        version: 1.0-1
+      groups:
+        - name: 'bskp Templates'
+      items:
+        - uuid: 5f6e94cecde64979847de300befc53f0
+          name: 'Speedtest  - Connectivity level'
+          type: TRAP
+          key: check.connectivity.level
+          value_type: FLOAT
+          valuemap:
+            name: 'Status Lilnk'
+          tags:
+            - tag: Links
+              value: Speedtest
+        - uuid: 486f490d78574e91ab7e8e1f4bb06610
+          name: 'Speedtest  - Download'
+          type: TRAP
+          key: speedtest.download
+          value_type: FLOAT
+          tags:
+            - tag: Links
+              value: Speedtest
+          triggers:
+            - uuid: 464c66927fe842de83bffb2077ae78ec
+              expression: 'nodata(/BSKP - Speedtest Template/speedtest.download,15m)=1'
+              name: '{HOST.NAME}: Falha no teste'
+              priority: AVERAGE
+              manual_close: 'YES'
+            - uuid: 1a47cfb2a44542d79ff400b3f2a7448e
+              expression: 'last(/BSKP - Speedtest Template/speedtest.download)=0'
+              name: '{HOST.NAME}: Internet link is DOWN'
+              priority: HIGH
+            - uuid: 651850781cdd426ab358a530d309be62
+              expression: 'last(/BSKP - Speedtest Template/speedtest.download)<=20'
+              name: '{HOST.NAME}: Taxa de Download Baixa'
+              status: DISABLED
+              priority: WARNING
+              manual_close: 'YES'
+        - uuid: 531756b7fdcd4b49ace026cb6ac87df3
+          name: 'Speedtest - ISP'
+          type: TRAP
+          key: speedtest.isp
+          value_type: TEXT
+          triggers:
+            - uuid: 5b984eb4b59c4dc1ace61cb2ac0e813d
+              expression: 'last(/BSKP - Speedtest Template/speedtest.isp)<>"\"RTI NETWORK\""'
+              name: '{HOST.NAME}: Troca de Link'
+              opdata: '{ITEM.LASTVALUE1}'
+              status: DISABLED
+              priority: AVERAGE
+              manual_close: 'YES'
+        - uuid: b3e946a1ea64497d90e6c33fef3aa13a
+          name: 'Speedtest - Latency'
+          type: TRAP
+          key: speedtest.latency
+          value_type: FLOAT
+        - uuid: 213e2408342944e38e6e5384cc575aa5
+          name: 'Speedtest - Packet Lost'
+          type: TRAP
+          key: speedtest.packet_loss
+          value_type: FLOAT
+        - uuid: d1a5705d498646519ec21f595375f91d
+          name: 'Speedtest - Ping'
+          type: TRAP
+          key: speedtest.ping
+          value_type: FLOAT
+          status: DISABLED
+          valuemap:
+            name: 'Status Lilnk'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 30m
+          tags:
+            - tag: component
+              value: health
+        - uuid: 26605c066a9d4cdcb53b4af9af05c92c
+          name: 'Speedtest - URL'
+          type: TRAP
+          key: speedtest.result_url
+          value_type: TEXT
+        - uuid: ce67a823c7e340b9ad0d68f7b8a9c259
+          name: 'Speedtest - Servidor'
+          type: TRAP
+          key: speedtest.server
+          value_type: TEXT
+        - uuid: 624ac72673cc4c119897278371523840
+          name: 'Speedtest  - Upload'
+          type: TRAP
+          key: speedtest.upload
+          value_type: FLOAT
+          tags:
+            - tag: Links
+              value: Speedtest
+          triggers:
+            - uuid: 97728e0645ac4201b0a073970e93b65f
+              expression: 'last(/BSKP - Speedtest Template/speedtest.upload)<=20'
+              name: '{HOST.NAME}: Taxa de Upload baixa'
+              status: DISABLED
+              priority: WARNING
+              manual_close: 'YES'
+      tags:
+        - tag: Links
+          value: Speedtest
+      macros:
+        - macro: '{$ISP}'
+          description: 'Name ISP'
+      valuemaps:
+        - uuid: eceee38b058a44b0b42760dd7b3c0674
+          name: 'Status Lilnk'
+          mappings:
+            - value: '0'
+              newvalue: 'Sem conexão nem com o gateway — link caiu'
+            - value: '1'
+              newvalue: 'Gateway ok, mas DNS não responde'
+            - value: '2'
+              newvalue: 'DNS responde, mas não navega (HTTP falha)'
+            - value: '3'
+              newvalue: 'Internet totalmente funcional'
+  graphs:
+    - uuid: c48033b39e314c41a0d366037031b3f8
+      name: Internet
+      graph_items:
+        - color: 199C0D
+          calc_fnc: ALL
+          item:
+            host: 'BSKP - Speedtest Template'
+            key: speedtest.download
+        - sortorder: '1'
+          color: F63100
+          calc_fnc: ALL
+          item:
+            host: 'BSKP - Speedtest Template'
+            key: speedtest.upload

@@ -1,0 +1,727 @@
+zabbix_export:
+  version: '7.4'
+  template_groups:
+    - uuid: 550e8400e29b41d4a716446655440000
+      name: 'bskp Templates'
+  templates:
+    - uuid: 46e539c114a84eb6a7512144abd2e875
+      template: 'BSKP - Hardware - Monitor Windows LHM'
+      name: 'BSKP - Hardware - Monitor Windows LHM'
+      vendor:
+        name: bskp
+        version: 1.7-2
+      groups:
+        - name: 'bskp Templates'
+      items:
+        - uuid: ec75fbc0e5fe4f5b8fd7f27e54a53c07
+          name: Hostname
+          key: agent.hostname
+          value_type: CHAR
+          tags:
+            - tag: System
+        - uuid: 9aa40c3676c94610ae90c8a0baef72b9
+          name: 'Zabbix agent ping'
+          key: agent.ping
+          description: 'The agent always returns "1" for this item. May be used in combination with `nodata()` for the availability check.'
+          tags:
+            - tag: Zabbix
+        - uuid: 122adc1238ee4232912542c2fa603fc4
+          name: 'Network Gateway - Packet Loss(%)'
+          type: SIMPLE
+          key: 'icmppingloss[{$GW_IP}]'
+          value_type: FLOAT
+          units: '%'
+          tags:
+            - tag: Networki
+          triggers:
+            - uuid: 8d3fb9ca9c8e4da2b6f45d363cee5dbf
+              expression: 'last(/BSKP - Hardware - Monitor Windows LHM/icmppingloss[{$GW_IP}])>20'
+              name: '{HOST.NAME}: Gateway with high packet loss (>20%)'
+              priority: WARNING
+              tags:
+                - tag: Network
+        - uuid: 54823dcdbf194e738953a9ea4931d3d4
+          name: 'Network Latency'
+          type: SIMPLE
+          key: 'icmppingsec[8.8.8.8]'
+          value_type: FLOAT
+          tags:
+            - tag: Network
+          triggers:
+            - uuid: 01863a542fe3430cb1365d76f351aa8d
+              expression: 'avg(/BSKP - Hardware - Monitor Windows LHM/icmppingsec[8.8.8.8],5m) > 0.2'
+              name: '{HOST.NAME}: High network latency (> 200ms)'
+              priority: HIGH
+              manual_close: 'YES'
+              tags:
+                - tag: Network
+        - uuid: e9f781552c9242f4a5d2ab0c2e75b6c0
+          name: 'Network Gateway - Latency(s)'
+          type: SIMPLE
+          key: 'icmppingsec[{$GW_IP}]'
+          value_type: FLOAT
+          units: s
+          tags:
+            - tag: Network
+          triggers:
+            - uuid: 1f8f94f3a4834094a2ba798cd6623da1
+              expression: 'avg(/BSKP - Hardware - Monitor Windows LHM/icmppingsec[{$GW_IP}],5m)>0.05'
+              name: '{HOST.NAME}: Gateway with high latency (>50ms per 5m)'
+              status: DISABLED
+              priority: INFO
+              tags:
+                - tag: Network
+        - uuid: a9eff6924a3d403cb3d1715bb2c7edf9
+          name: 'Network Gateway - Availability(ping)'
+          type: SIMPLE
+          key: 'icmpping[{$GW_IP}]'
+          tags:
+            - tag: Network
+          triggers:
+            - uuid: e3612c200cb24208aa00a73c4d335578
+              expression: 'min(/BSKP - Hardware - Monitor Windows LHM/icmpping[{$GW_IP}],#3)=0'
+              name: '{HOST.NAME}: Gateway unavailable (3 checks with no response)'
+              priority: HIGH
+              manual_close: 'YES'
+              tags:
+                - tag: Network
+        - uuid: ec674211c6724050bf701a788b25bf2d
+          name: 'CPU - Power Package'
+          type: DEPENDENT
+          key: librehw.cpu.power.package
+          value_type: FLOAT
+          units: W
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$..Children[?(@.SensorId=="/intelcpu/0/power/0")].Value'
+            - type: REGEX
+              parameters:
+                - '([0-9,]+)'
+                - \1
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.replace(",",".");'
+          master_item:
+            key: librehw.data.json
+          tags:
+            - tag: CPU
+        - uuid: 82a02335f48c41b6acc6bac794b469df
+          name: 'CPU - Temp'
+          type: DEPENDENT
+          key: librehw.cpu.temp.inteira
+          value_type: FLOAT
+          units: °C
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$..Children[?(@.SensorId=="/intelcpu/0/temperature/1")].Value'
+            - type: REGEX
+              parameters:
+                - '([0-9,]+)'
+                - \1
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.replace(",",".");'
+          master_item:
+            key: librehw.data.json
+          tags:
+            - tag: CPU
+        - uuid: 6a2e3110f454440195a0a17267eadc4b
+          name: 'LibreHW - Data JSON'
+          type: HTTP_AGENT
+          key: librehw.data.json
+          delay: 30s
+          value_type: TEXT
+          url: '{$LHM.URL}'
+          tags:
+            - tag: LHM
+        - uuid: 900d520e4ef346e2bc1ffb2023be5de7
+          name: 'GPU - utilization'
+          type: DEPENDENT
+          key: librehw.gpu.load.core
+          value_type: FLOAT
+          units: '%'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$..Children[?(@.SensorId=="/gpu-nvidia/0/load/0")].Value'
+            - type: REGEX
+              parameters:
+                - '([0-9,]+)'
+                - \1
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.replace(",",".");'
+          master_item:
+            key: librehw.data.json
+          tags:
+            - tag: GPU
+        - uuid: 96f277eed8b44263a9f0f9996ed3ea04
+          name: 'GPU - Power Package'
+          type: DEPENDENT
+          key: librehw.gpu.power.package
+          value_type: FLOAT
+          units: W
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$..Children[?(@.SensorId=="/gpu-nvidia/0/power/0")].Value'
+            - type: REGEX
+              parameters:
+                - '([0-9,]+)'
+                - \1
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.replace(",",".");'
+          master_item:
+            key: librehw.data.json
+          tags:
+            - tag: GPU
+        - uuid: 7eabe19a44694292aeb657dbbebd6b63
+          name: 'GPU - Temp Core'
+          type: DEPENDENT
+          key: librehw.gpu.temp.core
+          value_type: FLOAT
+          units: °C
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$..Children[?(@.SensorId=="/gpu-nvidia/0/temperature/0")].Value'
+            - type: REGEX
+              parameters:
+                - '([0-9,]+)'
+                - \1
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.replace(",",".");'
+          master_item:
+            key: librehw.data.json
+          tags:
+            - tag: GPU
+        - uuid: db79eb066aee4dfc85cc0976cd5d6664
+          name: 'GPU - Temp Hotspot'
+          type: DEPENDENT
+          key: librehw.gpu.temp.hotspot
+          value_type: FLOAT
+          units: °C
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$..Children[?(@.SensorId=="/gpu-nvidia/0/temperature/2")].Value'
+            - type: REGEX
+              parameters:
+                - '([0-9,]+)'
+                - \1
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.replace(",",".");'
+          master_item:
+            key: librehw.data.json
+          tags:
+            - tag: GPU
+        - uuid: 0f1744f7f52e436fa3653a5eed790cbf
+          name: 'GPU - vRAM free'
+          type: DEPENDENT
+          key: librehw.gpu.vram.free
+          value_type: FLOAT
+          units: MB
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$..Children[?(@.SensorId=="/gpu-nvidia/0/smalldata/0")].Value'
+            - type: REGEX
+              parameters:
+                - '([0-9,]+)'
+                - \1
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.replace(",",".");'
+          master_item:
+            key: librehw.data.json
+          tags:
+            - tag: GPU
+        - uuid: 2d4f74536bd642b7b96bca53bde29022
+          name: 'GPU - vRAM total'
+          type: DEPENDENT
+          key: librehw.gpu.vram.total
+          value_type: FLOAT
+          units: MB
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$..Children[?(@.SensorId=="/gpu-nvidia/0/smalldata/2")].Value'
+            - type: REGEX
+              parameters:
+                - '([0-9,]+)'
+                - \1
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.replace(",",".");'
+          master_item:
+            key: librehw.data.json
+          tags:
+            - tag: GPU
+        - uuid: 88ad44bafb684c459e6067d00a664b00
+          name: 'GPU - vRAM used'
+          type: DEPENDENT
+          key: librehw.gpu.vram.used
+          value_type: FLOAT
+          units: MB
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$..Children[?(@.SensorId=="/gpu-nvidia/0/smalldata/1")].Value'
+            - type: REGEX
+              parameters:
+                - '([0-9,]+)'
+                - \1
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.replace(",",".");'
+          master_item:
+            key: librehw.data.json
+          tags:
+            - tag: GPU
+        - uuid: d5122dc62fdf4f748b257f2657cd3ef0
+          name: 'GPU - vRAM utilization'
+          type: CALCULATED
+          key: librehw.gpu.vram.used.percent
+          value_type: FLOAT
+          units: '%'
+          params: '100 * last(//librehw.gpu.vram.used) / last(//librehw.gpu.vram.total)'
+          tags:
+            - tag: GPU
+        - uuid: 5858c8e0ea3a4ae59756391d0c583099
+          name: 'NVMe - Temp'
+          type: DEPENDENT
+          key: librehw.nvme.temp
+          value_type: FLOAT
+          units: °C
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$..Children[?(@.SensorId=="/nvme/0/temperature/0")].Value'
+            - type: REGEX
+              parameters:
+                - '([0-9,]+)'
+                - \1
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.replace(",",".");'
+          master_item:
+            key: librehw.data.json
+          tags:
+            - tag: NVMe
+        - uuid: c10dbccbca9545cdadc30ccad1684382
+          name: 'CMOS Battery'
+          type: DEPENDENT
+          key: librehw.voltage.cmos
+          value_type: FLOAT
+          units: V
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$..Children[?(@.SensorId=="/lpc/it8689e/0/voltage/8")].Value'
+            - type: REGEX
+              parameters:
+                - '([0-9,]+)'
+                - \1
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.replace(",",".");'
+          master_item:
+            key: librehw.data.json
+          tags:
+            - tag: Motherboard
+          triggers:
+            - uuid: 1c186ae8c6ce4448ac17813fcfd7436a
+              expression: 'last(/BSKP - Hardware - Monitor Windows LHM/librehw.voltage.cmos)<=2.7'
+              name: '{HOST.NAME}: CMOS battery voltage is low'
+              opdata: '{ITEM.LASTVALUE}'
+              priority: HIGH
+              description: |
+                The CMOS battery voltage has dropped below the recommended level (2.7V).
+                Replace the CMOS (RTC) battery to prevent BIOS settings loss and clock resets.
+              manual_close: 'YES'
+              tags:
+                - tag: Motherboard
+                  value: CMOS
+        - uuid: 3a5f93b73a644e2191942e40c8af14b9
+          name: 'Net RX Total'
+          key: 'net.if.in[{$NET.IFACE}]'
+          units: B
+          tags:
+            - tag: Network
+        - uuid: 51e91d136b4f4a01a256cf7ebdce7b3f
+          name: 'Net TX Total'
+          key: 'net.if.out[{$NET.IFACE}]'
+          units: B
+          tags:
+            - tag: Network
+        - uuid: c4b34b5082cd4f9fa45dc243dd34982b
+          name: 'Used swap space in %'
+          key: 'perf_counter_en["\Paging file(_Total)\% Usage"]'
+          units: '%'
+          description: 'The used space of swap volume/file in percent.'
+          tags:
+            - tag: 'File System'
+        - uuid: 4dc99c667bfa4ac99067fdffdd43ed7b
+          name: 'CPU - interrupt time'
+          key: 'perf_counter_en["\Processor Information(_total)\% Interrupt Time"]'
+          units: '%'
+          description: 'The processor information `% Interrupt Time` counter indicates how much time the processor spends handling hardware interrupts during sample intervals. It reflects the activity of devices like the system clock, mouse, disk drivers, and network cards. A value above 20% suggests possible hardware issues.'
+          tags:
+            - tag: CPU
+          triggers:
+            - uuid: 7ef093ca800a481ca4bdb11c4ef2c7e2
+              expression: 'min(/BSKP - Hardware - Monitor Windows LHM/perf_counter_en["\Processor Information(_total)\% Interrupt Time"],5m)>{$CPU.INTERRUPT.CRIT.MAX}'
+              name: '{HOST.NAME}: CPU interrupt time is abnormally high'
+              priority: WARNING
+              description: |
+                The CPU interrupt time is unusually high.
+                
+                This may indicate a hardware or driver issue causing excessive hardware interrupts or DPC activity.
+                
+                Possible causes:
+                - Faulty or incompatible device drivers
+                - Failing network or storage controller
+                - USB or disk I/O overload
+                - Audio or GPU driver issues
+                
+                Recommended action:
+                Check the "Interrupts" and "DPC" columns in Windows Performance Monitor (perfmon) or Resource Monitor, and update or disable problematic drivers or devices.
+              manual_close: 'YES'
+              tags:
+                - tag: CPU
+        - uuid: 9a74c22d1ae348a3934c1bd8639e7bff
+          name: 'CPU - privileged time'
+          key: 'perf_counter_en["\Processor Information(_total)\% Privileged Time"]'
+          units: '%'
+          description: 'The processor information `% Privileged Time` counter shows the percent of time that the processor is spent executing in Kernel (or Privileged) mode. Privileged mode includes services interrupts inside Interrupt Service Routines (ISRs), executing Deferred Procedure Calls (DPCs), Device Driver calls and other kernel-mode functions of the Windows Operating System.'
+          tags:
+            - tag: CPU
+          triggers:
+            - uuid: abc23bd0619b4de38790d428cbe6ba3a
+              expression: 'min(/BSKP - Hardware - Monitor Windows LHM/perf_counter_en["\Processor Information(_total)\% Privileged Time"],5m)>{$CPU.PRIV.CRIT.MAX}'
+              name: '{HOST.NAME}: CPU privileged time is too high'
+              priority: WARNING
+              description: |
+                The percentage of CPU time spent in privileged (kernel) mode is unusually high.
+                
+                This may indicate excessive kernel-level processing caused by faulty drivers, antivirus software, or hardware bottlenecks.
+                
+                Possible causes:
+                - Poorly optimized or faulty device drivers
+                - Intensive disk or network I/O activity
+                - Antivirus or security software consuming kernel resources
+                - Hardware interrupts or DPC latency
+                
+                Recommended action:
+                Use Windows Performance Monitor (perfmon) to analyze kernel and driver activity.
+                Update or disable problematic drivers or services, and verify that no hardware component is generating excessive interrupts.
+              manual_close: 'YES'
+              tags:
+                - tag: CPU
+        - uuid: bb067029ba284a96ad4fa1151eae4cde
+          name: 'CPU - queue length'
+          key: 'perf_counter_en["\System\Processor Queue Length"]'
+          value_type: FLOAT
+          description: 'The Processor Queue Length shows the number of threads that are observed as delayed in the processor Ready Queue and are waiting to be executed.'
+          tags:
+            - tag: CPU
+        - uuid: b30896f154cd4f828688ee74a4f66c71
+          name: 'Number of threads'
+          key: 'perf_counter_en["\System\Threads"]'
+          description: 'The number of threads used by all running processes.'
+          tags:
+            - tag: CPU
+        - uuid: cefece5ed87e4190bbe08bd62ad4acd0
+          name: 'Number of processes'
+          key: 'proc.num[]'
+          description: 'The number of processes.'
+          tags:
+            - tag: Windows
+        - uuid: 13d839f73c804f3dae4bf2225d9c3f70
+          name: 'CPU - utilization'
+          key: system.cpu.util
+          value_type: FLOAT
+          units: '%'
+          tags:
+            - tag: CPU
+          triggers:
+            - uuid: 23edcaf5a4254771994e202174745043
+              expression: 'min(/BSKP - Hardware - Monitor Windows LHM/system.cpu.util,5m)>=90'
+              name: '{HOST.NAME}: High CPU usage (≥90%)'
+              opdata: '{ITEM.LASTVALUE1}%'
+              priority: WARNING
+              description: |
+                The system has sustained high CPU utilization.
+                
+                This condition indicates that the processor is under heavy load, which can degrade overall system performance or responsiveness.
+                
+                Possible causes:
+                - Background services or applications consuming excessive CPU
+                - Antivirus or update processes
+                - Insufficient number of CPU cores for the workload
+                - Faulty or looping processes
+                
+                Recommended action:
+                Check Task Manager or Resource Monitor to identify processes with high CPU usage.
+                If the issue persists, consider optimizing applications or increasing CPU resources (vCPUs or cores).
+              tags:
+                - tag: CPU
+        - uuid: 63cee1d309a74dbeb1effa85428e1383
+          name: 'System name'
+          key: system.hostname
+          delay: 1h
+          value_type: CHAR
+          description: 'The host name of the system.'
+          tags:
+            - tag: System
+          triggers:
+            - uuid: d001a1f66f8d4adcb756fd6485dcfc04
+              expression: 'change(/BSKP - Hardware - Monitor Windows LHM/system.hostname) and length(last(/BSKP - Hardware - Monitor Windows LHM/system.hostname))>0'
+              name: '{HOST.NAME}: System name has changed'
+              opdata: 'Previous name: {ITEM.PREVVALUE1}, current name: {ITEM.LASTVALUE1}'
+              priority: INFO
+              description: |
+                The system hostname has changed.
+                
+                This may indicate that the computer was renamed, reinstalled, or cloned.
+                
+                Possible causes:
+                - Manual hostname change by an administrator
+                - Windows reinstallation or domain join event
+                - Cloning or re-imaging without proper reconfiguration
+                
+                Recommended action:
+                Verify if the hostname change was intentional.
+                Ensure that the Zabbix configuration matches the correct host name and update templates or inventory if necessary.
+              tags:
+                - tag: System
+        - uuid: fbcd232482e74589867a884fcac274a1
+          name: 'Operating system'
+          key: system.sw.os
+          delay: 1h
+          value_type: CHAR
+          inventory_link: OS
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1d
+          tags:
+            - tag: Windows
+          triggers:
+            - uuid: fb96b9dcae4b4d5eb88606957b31543e
+              expression: 'change(/BSKP - Hardware - Monitor Windows LHM/system.sw.os) and length(last(/BSKP - Hardware - Monitor Windows LHM/system.sw.os))>0'
+              name: '{HOST.NAME}: Windows: Operating system description has changed'
+              priority: INFO
+              description: 'The description of the operating system has changed. Possible reasons are that the system has been updated or replaced. Acknowledge to close the problem manually.'
+              manual_close: 'YES'
+              tags:
+                - tag: Windows
+        - uuid: 51cb93407b1b4cbf86793dcb4fabf2ef
+          name: Uptime
+          key: system.uptime
+          delay: 30s
+          units: uptime
+          description: 'The system uptime expressed in the following format: "N days, hh:mm:ss".'
+          tags:
+            - tag: System
+          triggers:
+            - uuid: 84641614f39045408d25f1fc45bb0d6f
+              expression: 'last(/BSKP - Hardware - Monitor Windows LHM/system.uptime)<5m'
+              name: '{HOST.NAME}: Host has been restarted'
+              opdata: '{ITEM.LASTVALUE1}s'
+              priority: INFO
+              description: |
+                The system has been restarted.
+                
+                This event indicates that the Windows host was rebooted or experienced an unexpected shutdown.
+                
+                Possible causes:
+                - Scheduled maintenance or system updates
+                - Power failure or forced reboot
+                - Hardware or software crash
+                
+                Recommended action:
+                Verify if the reboot was planned.
+                Check Windows Event Viewer for shutdown and startup events to confirm the cause of the restart.
+              tags:
+                - tag: System
+        - uuid: e29949910b3f4693a8fd257d2a5b4719
+          name: 'Get filesystems'
+          key: vfs.fs.get
+          value_type: TEXT
+          description: 'The `vfs.fs.get` key acquires raw information set about the filesystems. Later to be extracted by preprocessing in dependent items.'
+          tags:
+            - tag: 'File System'
+        - uuid: 9217ca73163f4d17969a3b2beda38dc0
+          name: 'RAM total'
+          key: 'vm.memory.size[total]'
+          units: B
+          tags:
+            - tag: RAM
+        - uuid: 5707380485ca4533b4e5b115fe155a12
+          name: 'RAM used'
+          key: 'vm.memory.size[used]'
+          units: B
+          description: 'Used memory in bytes.'
+          tags:
+            - tag: RAM
+        - uuid: 9753cbe22e734345a470b174140e9f8a
+          name: 'RAM utilization'
+          type: CALCULATED
+          key: vm.memory.util
+          units: '%'
+          params: 'last(//vm.memory.size[used]) / last(//vm.memory.size[total]) * 100'
+          tags:
+            - tag: RAM
+          triggers:
+            - uuid: 40bd80b383dc41deae9000d8af8570bc
+              expression: 'min(/BSKP - Hardware - Monitor Windows LHM/vm.memory.util,5m)>=90'
+              name: '{HOST.NAME}: High RAM usage (≥90%)'
+              opdata: '{ITEM.LASTVALUE1}%'
+              priority: HIGH
+              description: |
+                The system has sustained high memory utilization.
+                
+                This condition indicates that most of the physical memory is in use, which can lead to paging and degraded performance.
+                
+                Possible causes:
+                - Applications with memory leaks or high usage
+                - Too many concurrent processes or services
+                - Insufficient physical memory for the current workload
+                
+                Recommended action:
+                Use Task Manager or Resource Monitor to identify processes consuming the most memory.
+                Consider restarting non-critical applications, optimizing workloads, or adding additional RAM if the condition persists.
+              manual_close: 'YES'
+              tags:
+                - tag: RAM
+        - uuid: 556b46f4efee4c1f9e68aba008906f2c
+          name: 'Number of cores'
+          key: 'wmi.get[root/cimv2,"Select NumberOfLogicalProcessors from Win32_ComputerSystem"]'
+          tags:
+            - tag: CPU
+        - uuid: 9451483ef149444ab0ed9e812a429128
+          name: 'Zabbix agent availability'
+          type: INTERNAL
+          key: 'zabbix[host,agent,available]'
+          description: 'Used for monitoring the availability status of the agent.'
+          tags:
+            - tag: Zabbix
+          triggers:
+            - uuid: c1917bb379a040058e8cb64f50337ea0
+              expression: 'max(/BSKP - Hardware - Monitor Windows LHM/zabbix[host,agent,available],{$AGENT.TIMEOUT})=0'
+              name: '{HOST.NAME}: Zabbix agent is not responding'
+              opdata: '{ITEM.LASTVALUE1}'
+              priority: HIGH
+              description: 'This trigger indicates that the Zabbix agent (active mode) has stopped responding to the Zabbix server or proxy.'
+              manual_close: 'YES'
+              tags:
+                - tag: Zabbix
+      discovery_rules:
+        - uuid: f476d28a8396462eaf9f0ac343a9c277
+          name: 'Filesystem discovery'
+          key: vfs.fs.discovery
+          delay: 1h
+          item_prototypes:
+            - uuid: f6df2881c6084bfbbcc0e33d9a69eff0
+              name: 'Disk {#FSNAME} - Free space'
+              key: 'vfs.fs.size[{#FSNAME},free]'
+              units: B
+              tags:
+                - tag: 'File System'
+            - uuid: f3f369af033e419cb8a8c624e4962240
+              name: 'Disk {#FSNAME} - Used %'
+              key: 'vfs.fs.size[{#FSNAME},pused]'
+              units: '%'
+              tags:
+                - tag: 'File System'
+              trigger_prototypes:
+                - uuid: f9270307a806493f8d89266ae2714408
+                  expression: 'last(/BSKP - Hardware - Monitor Windows LHM/vfs.fs.size[{#FSNAME},pused])>=80'
+                  name: '{HOST.NAME}: {#FSLABEL}({#FSNAME}): Space is critically low'
+                  opdata: '{{ITEM.LASTVALUE1}.fmtnum(1)}%'
+                  priority: AVERAGE
+                  description: |
+                    The filesystem has reached a critical low space condition.
+                    
+                    Available free space is below the defined threshold (10%).
+                    
+                    Possible causes:
+                    - Log files or temporary files filling up the disk
+                    - Backups or application data not being rotated
+                    - Uncontrolled data growth
+                    
+                    Recommended action:
+                    Investigate which files or directories are consuming space.
+                    Clean up unnecessary data or extend the disk capacity if required.
+                  manual_close: 'YES'
+                  tags:
+                    - tag: 'File System'
+                - uuid: 181d46d8fe24431489dbdf3bc023f9dc
+                  expression: 'last(/BSKP - Hardware - Monitor Windows LHM/vfs.fs.size[{#FSNAME},pused])>=90'
+                  name: '{HOST.NAME}: {#FSLABEL}({#FSNAME}): Space is critically low'
+                  opdata: '{{ITEM.LASTVALUE1}.fmtnum(1)}%'
+                  priority: HIGH
+                  description: |
+                    The filesystem has reached a critical low space condition.
+                    
+                    Available free space is below the defined threshold (10%).
+                    
+                    Possible causes:
+                    - Log files or temporary files filling up the disk
+                    - Backups or application data not being rotated
+                    - Uncontrolled data growth
+                    
+                    Recommended action:
+                    Investigate which files or directories are consuming space.
+                    Clean up unnecessary data or extend the disk capacity if required.
+                  manual_close: 'YES'
+                  tags:
+                    - tag: 'File System'
+            - uuid: ea7667a20b754a8d9af5f36efa16de96
+              name: 'Disk {#FSNAME} - Total size'
+              key: 'vfs.fs.size[{#FSNAME},total]'
+              units: B
+              tags:
+                - tag: 'File System'
+            - uuid: ebd792dd3d05489e91723223e774f7ad
+              name: 'Disk {#FSNAME} - Used space'
+              key: 'vfs.fs.size[{#FSNAME},used]'
+              units: B
+              tags:
+                - tag: 'File System'
+      macros:
+        - macro: '{$AGENT.TIMEOUT}'
+          description: 'Timeout after which the agent is considered unavailable. Only works for agents accessible via the Zabbix server/proxy (passive mode).'
+        - macro: '{$GW_IP}'
+          description: 'Gateway IP of this host (e.g. 192.168.0.1)'
+        - macro: '{$LHM.URL}'
+          description: 'URL to access LHM data in Json'
+        - macro: '{$NET.IFACE}'
+          description: 'Name of the physical network controller'
+  triggers:
+    - uuid: 1cc933fd57214aa7bedd9d382c1701f8
+      expression: 'min(/BSKP - Hardware - Monitor Windows LHM/perf_counter_en["\System\Processor Queue Length"],5m) - last(/BSKP - Hardware - Monitor Windows LHM/wmi.get[root/cimv2,"Select NumberOfLogicalProcessors from Win32_ComputerSystem"]) * 2 > {$CPU.QUEUE.CRIT.MAX}'
+      name: '{HOST.NAME}: CPU queue length is too high'
+      priority: WARNING
+      description: |
+        The processor queue length is consistently high, indicating that too many threads are waiting for CPU time.
+        
+        This may cause performance degradation or system latency.
+        
+        Possible causes:
+        - CPU resources are fully utilized
+        - Insufficient CPU cores for workload
+        - High interrupt or privileged time from faulty drivers
+        - Background processes or antivirus consuming CPU
+        
+        Recommended action:
+        Check CPU utilization, active processes, and interrupt time.
+        If the issue is persistent, consider optimizing workloads or adding CPU resources (vCPUs or cores).
+      tags:
+        - tag: CPU

@@ -1,0 +1,187 @@
+zabbix_export:
+  version: '7.4'
+  template_groups:
+    - uuid: 550e8400e29b41d4a716446655440000
+      name: 'bskp Templates'
+  templates:
+    - uuid: 151ad6ab2c644b4f9e5bc1c87aad2971
+      template: 'BSKP - Certificates Linux'
+      name: 'BSKP - Certificates Linux'
+      description: |
+        Template: Certificados - Windows
+        
+        Autor: Kriticos (blackskulp.com.br)
+        Criação: 2025-03-15
+        Versão: 1.0
+        
+        Descrição:
+        Este template realiza a descoberta automática de certificados instalados no repositório LocalMachine e monitora a data de expiração.
+        
+        A trigger é acionada 15 dias antes do vencimento do certificado, podendo ser ajustada conforme necessidade.
+      vendor:
+        name: bskp
+        version: 1.0-1
+      groups:
+        - name: 'bskp Templates'
+      discovery_rules:
+        - uuid: c07a7c98c59a4d43bb755298081ed792
+          name: 'Certificado - LLD'
+          key: cert.lld.nginx
+          delay: 6h
+          item_prototypes:
+            - uuid: c3da18b845cb4e38a94c043a8967bd76
+              name: 'Certificado expirando - {#CERTCN}'
+              key: 'cert.nginx.expira[{#CERTCN}]'
+              delay: 6h
+              trends: '0'
+              units: 'dias restantes'
+              tags:
+                - tag: Certificados
+                  value: NGINX
+              trigger_prototypes:
+                - uuid: 77c4c6d14c88472fa700b1ff47c517a2
+                  expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=1'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])<>1'
+                  name: '⚠️ Certificado {#CERTCN} expira em'
+                  opdata: '{ITEM.LASTVALUE1} dia(s)'
+                  priority: HIGH
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: NGINX
+                - uuid: 9f27f3d2bc674f52a1b122902a68464e
+                  expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=2'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])<>2'
+                  name: '⚠️ Certificado {#CERTCN} expira em'
+                  opdata: '{ITEM.LASTVALUE1} dia(s)'
+                  priority: HIGH
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: NGINX
+                - uuid: d708c70ada344db6b73f321a07d4811f
+                  expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=3'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])<>3'
+                  name: '⚠️ Certificado {#CERTCN} expira em'
+                  opdata: '{ITEM.LASTVALUE1} dia(s)'
+                  priority: HIGH
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: NGINX
+                - uuid: d63e9dab784e46dbb2bb449f3ef6840e
+                  expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=4'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])<>4'
+                  name: '⚠️ Certificado {#CERTCN} expira em'
+                  opdata: '{ITEM.LASTVALUE1} dia(s)'
+                  priority: HIGH
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: NGINX
+                - uuid: 70db9cbfda944de4a3d12589bc45ec37
+                  expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=5'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])<>5'
+                  name: '⚠️ Certificado {#CERTCN} expira em'
+                  opdata: '{ITEM.LASTVALUE1} dia(s)'
+                  priority: HIGH
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: NGINX
+                - uuid: ebe1ac135d12496e9b83bff31ebff7a8
+                  expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=7'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])<>7'
+                  name: '⚠️ Certificado {#CERTCN} expira em'
+                  opdata: '{ITEM.LASTVALUE1} dia(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: NGINX
+                - uuid: 06c3bae38a3340f09212968fc5a8f1af
+                  expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=9'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])<>9'
+                  name: '⚠️ Certificado {#CERTCN} expira em'
+                  opdata: '{ITEM.LASTVALUE1} dia(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: NGINX
+                - uuid: b8cbb3b59a974a058c94c824f1540848
+                  expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=10'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])<>10'
+                  name: '⚠️ Certificado {#CERTCN} expira em'
+                  opdata: '{ITEM.LASTVALUE1} dia(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: NGINX
+                - uuid: d718be2db3ed4a13b6b8a1379936eec7
+                  expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=11'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])<>11'
+                  name: '⚠️ Certificado {#CERTCN} expira em'
+                  opdata: '{ITEM.LASTVALUE1} dia(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: NGINX
+                - uuid: 84eb70be6bda47d78f40edbdc2a1c5fd
+                  expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=12'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])<>12'
+                  name: '⚠️ Certificado {#CERTCN} expira em'
+                  opdata: '{ITEM.LASTVALUE1} dia(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: NGINX
+                - uuid: cf9dd9ed410e4230a864bd7269b47d35
+                  expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=13'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])<>13'
+                  name: '⚠️ Certificado {#CERTCN} expira em'
+                  opdata: '{ITEM.LASTVALUE1} dia(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: NGINX
+                - uuid: 29f73c42c4de4e94b2f35f27ec9d1a3e
+                  expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=14'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])<>14'
+                  name: '⚠️ Certificado {#CERTCN} expira em'
+                  opdata: '{ITEM.LASTVALUE1} dia(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: NGINX
+                - uuid: 33a189e4277d4415854dd13dbea79828
+                  expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=15'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])<>15'
+                  name: '⚠️ Certificado {#CERTCN} expira em'
+                  opdata: '{ITEM.LASTVALUE1} dia(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Certificados
+                      value: NGINX
+      tags:
+        - tag: Certificados
+          value: NGINX

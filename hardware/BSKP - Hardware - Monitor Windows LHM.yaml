@@ -766,14 +766,14 @@ zabbix_export:
           delay: 1h
           item_prototypes:
             - uuid: f6df2881c6084bfbbcc0e33d9a69eff0
-              name: 'Disk {#FSNAME} - Free space'
+              name: 'Disk {#FSNAME} Free space'
               key: 'vfs.fs.size[{#FSNAME},free]'
               units: B
               tags:
                 - tag: component
                   value: filesystem
             - uuid: f3f369af033e419cb8a8c624e4962240
-              name: 'Disk {#FSNAME} - Used %'
+              name: 'Disk {#FSNAME} used %'
               key: 'vfs.fs.size[{#FSNAME},pused]'
               units: '%'
               tags:
@@ -829,14 +829,14 @@ zabbix_export:
                     - tag: scope
                       value: capacity
             - uuid: ea7667a20b754a8d9af5f36efa16de96
-              name: 'Disk {#FSNAME} - Total size'
+              name: 'Disk {#FSNAME} total size'
               key: 'vfs.fs.size[{#FSNAME},total]'
               units: B
               tags:
                 - tag: component
                   value: filesystem
             - uuid: ebd792dd3d05489e91723223e774f7ad
-              name: 'Disk {#FSNAME} - Used space'
+              name: 'Disk {#FSNAME} used space'
               key: 'vfs.fs.size[{#FSNAME},used]'
               units: B
               tags:

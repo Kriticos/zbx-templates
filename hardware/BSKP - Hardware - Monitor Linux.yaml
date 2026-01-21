@@ -25,6 +25,15 @@ zabbix_export:
         version: 2.0-1
       groups:
         - name: 'Templates/Operating systems'
+      tags:
+        - tag: vendor
+          value: bskp
+        - tag: os
+          value: linux
+        - tag: service
+          value: agent
+        - tag: category
+          value: hardware
       items:
         - uuid: df561a0cece94760a78704edf7da7326
           name: 'Host name of Zabbix agent running'

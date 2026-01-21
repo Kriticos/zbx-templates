@@ -1,0 +1,421 @@
+zabbix_export:
+  version: '7.4'
+  template_groups:
+    - uuid: 550e8400e29b41d4a716446655440000
+      name: 'bskp Templates'
+  templates:
+    - uuid: a651592d94e841d5a423136e82cd97a5
+      template: 'BSKP - Hardware Monitor Notebooks Windows'
+      name: 'BSKP - Hardware Monitor Notebooks Windows'
+      vendor:
+        name: bskp
+        version: 1.7-2
+      groups:
+        - name: 'bskp Templates'
+      items:
+        - uuid: 8b69a1c66690453f80cf6ceeae3985f7
+          name: 'Zabbix agent hostname'
+          type: ZABBIX_ACTIVE
+          key: agent.hostname
+          value_type: CHAR
+          description: 'The host name of the Zabbix agent running on the host.'
+          tags:
+            - tag: component
+              value: system
+        - uuid: 98576f12275f4e4492d40f0103087c45
+          name: 'Gateway latency'
+          type: TRAP
+          key: 'icmppingsec[{$GW_IP}]'
+          value_type: FLOAT
+          status: DISABLED
+          units: s
+          description: 'ICMP response time to the default gateway.'
+          tags:
+            - tag: component
+              value: network
+        - uuid: 493e5dff33274fb6b563c22572d68d72
+          name: 'Gateway availability'
+          type: TRAP
+          key: 'icmpping[{$GW_IP}]'
+          value_type: FLOAT
+          status: DISABLED
+          description: 'ICMP reachability of the default gateway.'
+          tags:
+            - tag: component
+              value: network
+        - uuid: 784a373712f547709ed61907b503816e
+          name: 'CPU power package'
+          type: TRAP
+          key: librehw.cpu.power.package
+          units: W
+          description: 'CPU package power draw.'
+          tags:
+            - tag: component
+              value: cpu
+            - tag: service
+              value: lhm
+        - uuid: f22b6f3292b244e6984ea17e12132276
+          name: 'CPU temperature'
+          type: TRAP
+          key: librehw.cpu.temp.inteira
+          value_type: FLOAT
+          units: C
+          description: 'CPU temperature.'
+          tags:
+            - tag: component
+              value: cpu
+            - tag: service
+              value: lhm
+        - uuid: 4eafc7786ff0471cbd00fba5dc127bf7
+          name: 'GPU utilization'
+          type: TRAP
+          key: librehw.gpu.load.core
+          units: '%'
+          description: 'GPU utilization.'
+          tags:
+            - tag: component
+              value: gpu
+            - tag: service
+              value: lhm
+        - uuid: 5012cc12798f43db8c7cd8e94cfc40ee
+          name: 'GPU power package'
+          type: TRAP
+          key: librehw.gpu.power.package
+          value_type: FLOAT
+          units: W
+          description: 'GPU package power draw.'
+          tags:
+            - tag: component
+              value: gpu
+            - tag: service
+              value: lhm
+        - uuid: 752d966a8e9f4c82acddaf5cb80984df
+          name: 'GPU temperature (core)'
+          type: TRAP
+          key: librehw.gpu.temp.core
+          value_type: FLOAT
+          units: C
+          description: 'GPU core temperature.'
+          tags:
+            - tag: component
+              value: gpu
+            - tag: service
+              value: lhm
+        - uuid: 32d3327a2e3e49daacbe656939390177
+          name: 'GPU temperature (hotspot)'
+          type: TRAP
+          key: librehw.gpu.temp.hotspot
+          value_type: FLOAT
+          units: C
+          description: 'GPU hotspot temperature.'
+          tags:
+            - tag: component
+              value: gpu
+            - tag: service
+              value: lhm
+        - uuid: 140b8dea8b3e4b87b4d0e93e92c8285d
+          name: 'GPU VRAM total'
+          type: TRAP
+          key: librehw.gpu.vram.total
+          value_type: FLOAT
+          units: B
+          description: 'Total GPU video memory.'
+          tags:
+            - tag: component
+              value: gpu
+            - tag: service
+              value: lhm
+        - uuid: 90b00362cf8a4687a8d5b9191b5bbbe5
+          name: 'GPU VRAM used'
+          type: TRAP
+          key: librehw.gpu.vram.used
+          value_type: FLOAT
+          units: B
+          description: 'Used GPU video memory.'
+          tags:
+            - tag: component
+              value: gpu
+            - tag: service
+              value: lhm
+        - uuid: 9875cc2dc7014da598c16c73617cd7be
+          name: 'GPU VRAM utilization'
+          type: CALCULATED
+          key: librehw.gpu.vram.used.percent
+          value_type: FLOAT
+          units: '%'
+          params: '100 * last(//librehw.gpu.vram.used) / last(//librehw.gpu.vram.total)'
+          description: 'GPU video memory utilization.'
+          tags:
+            - tag: component
+              value: gpu
+            - tag: service
+              value: lhm
+        - uuid: be80e70748884d24b57ce2aec5d87520
+          name: 'NVMe temperature'
+          type: TRAP
+          key: librehw.nvme.temp
+          units: C
+          description: 'NVMe temperature.'
+          tags:
+            - tag: component
+              value: storage
+            - tag: service
+              value: lhm
+        - uuid: bc7b86c3df3b40f2a30182e3ceac60d0
+          name: 'Network RX total'
+          type: ZABBIX_ACTIVE
+          key: 'net.if.in[{$NET.IFACE}]'
+          units: B
+          description: 'Total incoming network traffic on the selected interface.'
+          tags:
+            - tag: component
+              value: network
+        - uuid: 090f07179f854a48940c23c2e3f88a3d
+          name: 'Network TX total'
+          type: ZABBIX_ACTIVE
+          key: 'net.if.out[{$NET.IFACE}]'
+          units: B
+          description: 'Total outgoing network traffic on the selected interface.'
+          tags:
+            - tag: component
+              value: network
+        - uuid: d1734705d90040bea76f570024147c17
+          name: 'Swap usage'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Paging file(_Total)\% Usage"]'
+          trends: '0'
+          units: '%'
+          description: 'Swap space utilization in percent.'
+          tags:
+            - tag: component
+              value: memory
+        - uuid: f6233e0e36744144ab230c9bdb481377
+          name: 'CPU interrupt time'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Processor Information(_total)\% Interrupt Time"]'
+          units: '%'
+          description: 'Percentage of time the CPU spends handling hardware interrupts.'
+          tags:
+            - tag: component
+              value: cpu
+        - uuid: 8f776867d2be4717af41a73b64c7a33f
+          name: 'CPU queue length'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\System\Processor Queue Length"]'
+          value_type: FLOAT
+          description: 'Number of threads waiting for CPU time.'
+          tags:
+            - tag: component
+              value: cpu
+        - uuid: 85caa67c21cd4f29a5518851eded58e4
+          name: 'Number of threads'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\System\Threads"]'
+          description: 'Number of threads used by all running processes.'
+          tags:
+            - tag: component
+              value: cpu
+        - uuid: c52d524c77f84ecf812a8cd76f97ad5b
+          name: 'Number of processes'
+          type: ZABBIX_ACTIVE
+          key: 'proc.num[]'
+          description: 'Number of processes.'
+          tags:
+            - tag: component
+              value: system
+            - tag: os
+              value: windows
+        - uuid: d7a013706a1348b0819d2021a92ac505
+          name: 'CPU utilization'
+          type: ZABBIX_ACTIVE
+          key: system.cpu.util
+          delay: 30s
+          value_type: FLOAT
+          units: '%'
+          description: 'CPU utilization in percent.'
+          tags:
+            - tag: component
+              value: cpu
+        - uuid: a9d65caa5bb44a51aca8737d8cebc01f
+          name: 'System name'
+          type: ZABBIX_ACTIVE
+          key: system.hostname
+          value_type: CHAR
+          description: 'The host name of the system.'
+          tags:
+            - tag: component
+              value: system
+        - uuid: 1df2ece08c034b95a5d53a6352430b77
+          name: 'Operating system'
+          type: ZABBIX_ACTIVE
+          key: system.sw.os
+          value_type: CHAR
+          description: 'Operating system description.'
+          tags:
+            - tag: component
+              value: os
+            - tag: os
+              value: windows
+        - uuid: 36b1aeef5f4c48c78d886b8497950a83
+          name: 'System uptime'
+          type: ZABBIX_ACTIVE
+          key: system.uptime
+          trends: '0'
+          units: uptime
+          description: 'System uptime.'
+          tags:
+            - tag: component
+              value: system
+        - uuid: 0f1d039a7c5341c9b1f558d82323c202
+          name: 'Disk C: Free space'
+          type: ZABBIX_ACTIVE
+          key: 'vfs.fs.size[C:,free]'
+          units: B
+          description: 'Free space on filesystem C:.'
+          tags:
+            - tag: component
+              value: filesystem
+        - uuid: dd051ddc756e444f9d95f16e8f7ad04d
+          name: 'Disk C: Used (%)'
+          type: ZABBIX_ACTIVE
+          key: 'vfs.fs.size[C:,pused]'
+          units: '%'
+          description: 'Used space percentage on filesystem C:.'
+          tags:
+            - tag: component
+              value: filesystem
+        - uuid: 85367a9fda7c4899bc32bed13c6a53ed
+          name: 'Disk C: Total space'
+          type: ZABBIX_ACTIVE
+          key: 'vfs.fs.size[C:,total]'
+          units: B
+          description: 'Total size of filesystem C:.'
+          tags:
+            - tag: component
+              value: filesystem
+        - uuid: 06dc2e21da1244c199dff5f3c64fc34d
+          name: 'Disk C: Used space'
+          type: ZABBIX_ACTIVE
+          key: 'vfs.fs.size[C:,used]'
+          units: B
+          description: 'Used space on filesystem C:.'
+          tags:
+            - tag: component
+              value: filesystem
+        - uuid: 14260c3716cc4d3793c648a873f042f2
+          name: 'Disk D: Free space'
+          type: ZABBIX_ACTIVE
+          key: 'vfs.fs.size[D:,free]'
+          units: B
+          description: 'Free space on filesystem D:.'
+          tags:
+            - tag: component
+              value: filesystem
+        - uuid: 62347c7992fd4fba8c5ecf4a995892a9
+          name: 'Disk D: Used (%)'
+          type: ZABBIX_ACTIVE
+          key: 'vfs.fs.size[D:,pused]'
+          units: '%'
+          description: 'Used space percentage on filesystem D:.'
+          tags:
+            - tag: component
+              value: filesystem
+        - uuid: 5656db923fa94f4ca14255427b5933e4
+          name: 'Disk D: Total space'
+          type: ZABBIX_ACTIVE
+          key: 'vfs.fs.size[D:,total]'
+          units: B
+          description: 'Total size of filesystem D:.'
+          tags:
+            - tag: component
+              value: filesystem
+        - uuid: ed676ab1450a4a0a95a6033da7358a22
+          name: 'Disk D: Used space'
+          type: ZABBIX_ACTIVE
+          key: 'vfs.fs.size[D:,used]'
+          units: B
+          description: 'Used space on filesystem D:.'
+          tags:
+            - tag: component
+              value: filesystem
+        - uuid: a23c136940aa42818200fa8a00748b76
+          name: 'Disk E: Free space'
+          type: ZABBIX_ACTIVE
+          key: 'vfs.fs.size[E:,free]'
+          units: B
+          description: 'Free space on filesystem E:.'
+          tags:
+            - tag: component
+              value: filesystem
+        - uuid: 4ce6b17b017544ae96813edd91af03d4
+          name: 'Disk E: Used (%)'
+          type: ZABBIX_ACTIVE
+          key: 'vfs.fs.size[E:,pused]'
+          units: '%'
+          description: 'Used space percentage on filesystem E:.'
+          tags:
+            - tag: component
+              value: filesystem
+        - uuid: d94e1131580d4e73bf74f632fe2f6231
+          name: 'Disk E: Total space'
+          type: ZABBIX_ACTIVE
+          key: 'vfs.fs.size[E:,total]'
+          units: B
+          description: 'Total size of filesystem E:.'
+          tags:
+            - tag: component
+              value: filesystem
+        - uuid: 1b976639b9b34c64a78b94b32cfb6814
+          name: 'Disk E: Used space'
+          type: ZABBIX_ACTIVE
+          key: 'vfs.fs.size[E:,used]'
+          units: B
+          description: 'Used space on filesystem E:.'
+          tags:
+            - tag: component
+              value: filesystem
+        - uuid: eceb221ee2ca4708a372f57cc610566d
+          name: 'Total memory'
+          type: ZABBIX_ACTIVE
+          key: 'vm.memory.size[total]'
+          value_type: FLOAT
+          units: B
+          description: 'Total physical memory.'
+          tags:
+            - tag: component
+              value: memory
+        - uuid: 103a6c63c3744a36874d441e2fd63c3c
+          name: 'Used memory'
+          type: ZABBIX_ACTIVE
+          key: 'vm.memory.size[used]'
+          value_type: FLOAT
+          units: B
+          description: 'Used physical memory.'
+          tags:
+            - tag: component
+              value: memory
+        - uuid: 542b9be054514df0abfff5724b657c7f
+          name: 'Memory utilization'
+          type: CALCULATED
+          key: vm.memory.util
+          units: '%'
+          params: 'last(//vm.memory.size[used]) / last(//vm.memory.size[total]) * 100'
+          description: 'Memory utilization in percent.'
+          tags:
+            - tag: component
+              value: memory
+        - uuid: 5894db26b402431da758c1459b71be39
+          name: 'CPU cores'
+          type: ZABBIX_ACTIVE
+          key: 'wmi.get[root/cimv2,"Select NumberOfLogicalProcessors from Win32_ComputerSystem"]'
+          description: 'Number of logical CPU cores.'
+          tags:
+            - tag: component
+              value: cpu
+      macros:
+        - macro: '{$GW_IP}'
+          description: 'Gateway IP of this host (e.g. 192.168.0.1)'
+        - macro: '{$NET.IFACE}'
+          description: 'Name of the physical network controller'
+
+

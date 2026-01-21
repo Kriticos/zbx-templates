@@ -1,39 +1,69 @@
-# Tutorial - Monitoramento de Certificados no Linux com Zabbix Agent 2
+# Certificate Monitoring with Zabbix Agent 2 (Linux and Windows)
 
-Este guia aplica o template `BSKP - Certificates Linux` (NGINX) e depende de dois scripts no host Linux.
+This guide merges the Linux and Windows setup for the BSKP certificate templates.
 
-## 1. Estrutura de arquivos
+## 1. File structure
 
-Copie os scripts para o servidor Linux onde o Zabbix Agent 2 roda.
+### Linux (NGINX container)
 
-Exemplo:
+You need a Linux VM running Zabbix Agent 2. The scripts must be placed on this VM
+(the NGINX container does not run the agent).
+
+Copy the scripts to the Linux host where Zabbix Agent 2 runs:
 
 ```text
-/bskp/scripts/zabbix/certificados/
+/scripts/zabbix/certificados/
   discover-certs.sh
   check_cert_expiry.sh
 ```
 
-Os scripts foram feitos para localizar certificados dentro de um container NGINX.
-Defina o nome do container na variavel `CONTAINER` dentro dos scripts.
+The scripts look for certificates inside an NGINX container.
+Set the container name in the `CONTAINER` variable inside the scripts.
 
-## 2. Configuracao do zabbix_agent2.conf
+### Windows
 
-Edite o arquivo `zabbix_agent2.conf` no host Linux e adicione:
+Copy the scripts to the monitored Windows host:
+
+```text
+C:\Scripts\Zabbix\Certificados\
+  discover-certs.ps1
+  check_cert_expiry.ps1
+```
+
+## 2. zabbix_agent2.conf configuration
+
+Edit `zabbix_agent2.conf` and add the following UserParameters.
+
+### Linux
 
 ```ini
 # Certificate monitoring (NGINX)
-UserParameter=cert.lld.nginx,/bskp/scripts/zabbix/certificados/discover-certs.sh
-UserParameter=cert.nginx.expira[*],/bskp/scripts/zabbix/certificados/check_cert_expiry.sh $1
+UserParameter=cert.lld.nginx,/scripts/zabbix/certificados/certs-lld.sh
+UserParameter=cert.nginx.expira[*],/bskp/scripts/zabbix/certificados/cert-expira.sh $1
 ```
 
-Reinicie o Zabbix Agent 2 apos salvar.
+### Windows
 
-## 3. Configuracao do host no Zabbix
+```ini
+# Certificate monitoring (Windows)
+UserParameter=cert.discovery,powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Scripts\Zabbix\Certificados\discovery-certs.ps1"
+UserParameter=cert.expira[*],powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Scripts\Zabbix\Certificados\check_cert_expiry.ps1" -thumb "$1"
+```
 
-Crie um host (ex.: "Certificates - Linux"), associe o template `BSKP - Certificates Linux`
-e aponte o IP do servidor onde os certificados estao instalados.
+Restart Zabbix Agent 2 after saving changes.
 
-## Observacao
+## 3. Host configuration in Zabbix
 
-Certificados expirados continuam gerando alerta ate serem removidos do host.
+### Linux
+
+Create a host (e.g., "Certificates - Linux"), link the template `BSKP - Certificates Linux`,
+and set the host IP of the Linux server where the certificates are installed.
+
+### Windows
+
+Create a host (e.g., "Certificates - Windows"), link the template `BSKP - Certificates Windows`,
+and set the host IP of the Windows server where the certificates are installed.
+
+## Notes
+
+Expired certificates keep triggering until they are removed from the host.

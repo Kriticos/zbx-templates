@@ -19,7 +19,7 @@ zabbix_export:
         
         A trigger fires 15 days before expiration and can be adjusted as needed.
   
-vendor:
+      vendor:
         name: bskp
         version: 1.0-1
       groups:

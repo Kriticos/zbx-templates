@@ -18,8 +18,7 @@ zabbix_export:
         Discovers NGINX certificates and monitors the expiration date.
         
         A trigger fires 15 days before expiration and can be adjusted as needed.
-  
-vendor:
+      vendor:
         name: bskp
         version: 1.0-1
       groups:
@@ -40,10 +39,10 @@ vendor:
               tags:
                 - tag: component
                   value: cert
-                - tag: service
-                  value: nginx
                 - tag: os
                   value: linux
+                - tag: service
+                  value: nginx
               trigger_prototypes:
                 - uuid: 77c4c6d14c88472fa700b1ff47c517a2
                   expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=1'
@@ -56,10 +55,10 @@ vendor:
                   tags:
                     - tag: component
                       value: cert
-                    - tag: service
-                      value: nginx
                     - tag: scope
                       value: security
+                    - tag: service
+                      value: nginx
                 - uuid: 9f27f3d2bc674f52a1b122902a68464e
                   expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=2'
                   recovery_mode: RECOVERY_EXPRESSION
@@ -71,10 +70,10 @@ vendor:
                   tags:
                     - tag: component
                       value: cert
-                    - tag: service
-                      value: nginx
                     - tag: scope
                       value: security
+                    - tag: service
+                      value: nginx
                 - uuid: d708c70ada344db6b73f321a07d4811f
                   expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=3'
                   recovery_mode: RECOVERY_EXPRESSION
@@ -86,10 +85,10 @@ vendor:
                   tags:
                     - tag: component
                       value: cert
-                    - tag: service
-                      value: nginx
                     - tag: scope
                       value: security
+                    - tag: service
+                      value: nginx
                 - uuid: d63e9dab784e46dbb2bb449f3ef6840e
                   expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=4'
                   recovery_mode: RECOVERY_EXPRESSION
@@ -101,10 +100,10 @@ vendor:
                   tags:
                     - tag: component
                       value: cert
-                    - tag: service
-                      value: nginx
                     - tag: scope
                       value: security
+                    - tag: service
+                      value: nginx
                 - uuid: 70db9cbfda944de4a3d12589bc45ec37
                   expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=5'
                   recovery_mode: RECOVERY_EXPRESSION
@@ -116,11 +115,26 @@ vendor:
                   tags:
                     - tag: component
                       value: cert
-                    - tag: service
-                      value: nginx
                     - tag: scope
                       value: security
-                - uuid: ebe1ac135d12496e9b83bff31ebff7a8
+                    - tag: service
+                      value: nginx
+                - uuid: 9d9201d705bd4e6a8e8a307e98f2701f
+                  expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=6'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])<>6'
+                  name: '{HOST.NAME}: Certificate {#CERTCN} expires in {ITEM.LASTVALUE1} day(s)'
+                  opdata: '{ITEM.LASTVALUE1} day(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: component
+                      value: cert
+                    - tag: scope
+                      value: security
+                    - tag: service
+                      value: nginx
+                - uuid: c71af315a5aa4de1aaf674d8071e94e1
                   expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=7'
                   recovery_mode: RECOVERY_EXPRESSION
                   recovery_expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])<>7'
@@ -131,10 +145,25 @@ vendor:
                   tags:
                     - tag: component
                       value: cert
-                    - tag: service
-                      value: nginx
                     - tag: scope
                       value: security
+                    - tag: service
+                      value: nginx
+                - uuid: ebe1ac135d12496e9b83bff31ebff7a8
+                  expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=8'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])<>8'
+                  name: '{HOST.NAME}: Certificate {#CERTCN} expires in {ITEM.LASTVALUE1} day(s)'
+                  opdata: '{ITEM.LASTVALUE1} day(s)'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  tags:
+                    - tag: component
+                      value: cert
+                    - tag: scope
+                      value: security
+                    - tag: service
+                      value: nginx
                 - uuid: 06c3bae38a3340f09212968fc5a8f1af
                   expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=9'
                   recovery_mode: RECOVERY_EXPRESSION
@@ -146,10 +175,10 @@ vendor:
                   tags:
                     - tag: component
                       value: cert
-                    - tag: service
-                      value: nginx
                     - tag: scope
                       value: security
+                    - tag: service
+                      value: nginx
                 - uuid: b8cbb3b59a974a058c94c824f1540848
                   expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=10'
                   recovery_mode: RECOVERY_EXPRESSION
@@ -161,10 +190,10 @@ vendor:
                   tags:
                     - tag: component
                       value: cert
-                    - tag: service
-                      value: nginx
                     - tag: scope
                       value: security
+                    - tag: service
+                      value: nginx
                 - uuid: d718be2db3ed4a13b6b8a1379936eec7
                   expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=11'
                   recovery_mode: RECOVERY_EXPRESSION
@@ -176,10 +205,10 @@ vendor:
                   tags:
                     - tag: component
                       value: cert
-                    - tag: service
-                      value: nginx
                     - tag: scope
                       value: security
+                    - tag: service
+                      value: nginx
                 - uuid: 84eb70be6bda47d78f40edbdc2a1c5fd
                   expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=12'
                   recovery_mode: RECOVERY_EXPRESSION
@@ -191,10 +220,10 @@ vendor:
                   tags:
                     - tag: component
                       value: cert
-                    - tag: service
-                      value: nginx
                     - tag: scope
                       value: security
+                    - tag: service
+                      value: nginx
                 - uuid: cf9dd9ed410e4230a864bd7269b47d35
                   expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=13'
                   recovery_mode: RECOVERY_EXPRESSION
@@ -206,10 +235,10 @@ vendor:
                   tags:
                     - tag: component
                       value: cert
-                    - tag: service
-                      value: nginx
                     - tag: scope
                       value: security
+                    - tag: service
+                      value: nginx
                 - uuid: 29f73c42c4de4e94b2f35f27ec9d1a3e
                   expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=14'
                   recovery_mode: RECOVERY_EXPRESSION
@@ -221,10 +250,10 @@ vendor:
                   tags:
                     - tag: component
                       value: cert
-                    - tag: service
-                      value: nginx
                     - tag: scope
                       value: security
+                    - tag: service
+                      value: nginx
                 - uuid: 33a189e4277d4415854dd13dbea79828
                   expression: 'last(/BSKP - Certificates Linux/cert.nginx.expira[{#CERTCN}])=15'
                   recovery_mode: RECOVERY_EXPRESSION
@@ -236,21 +265,16 @@ vendor:
                   tags:
                     - tag: component
                       value: cert
-                    - tag: service
-                      value: nginx
                     - tag: scope
                       value: security
+                    - tag: service
+                      value: nginx
       tags:
-        - tag: vendor
-          value: bskp
+        - tag: category
+          value: certificates
         - tag: os
           value: linux
         - tag: service
           value: nginx
-        - tag: category
-          value: certificates
-
-
-
-
-
+        - tag: vendor
+          value: bskp

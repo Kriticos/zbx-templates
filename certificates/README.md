@@ -44,6 +44,7 @@ UserParameter=cert.nginx.expira[*],/bskp/scripts/zabbix/certificados/cert-expira
 
 ### Windows
 
+
 ```ini
 # Certificate monitoring (Windows)
 UserParameter=cert.discovery,powershell -NoProfile -ExecutionPolicy Bypass -File "C:\Scripts\Zabbix\Certificados\discovery-certs.ps1"
